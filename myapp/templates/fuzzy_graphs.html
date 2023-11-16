@@ -1,0 +1,163 @@
+<!-- myapp/templates/fuzzy_graphs.html -->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Gráficos Fuzzy</title>
+  <style>
+  .header {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #3498db; /* Azul, altere conforme a sua preferência */
+    border-radius: 8px; /* Aumentado o raio para um visual mais suave */
+    padding: 15px; /* Adicionado algum espaçamento interno */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adicionado sombra suave */
+  }
+
+  .header h1 {
+    text-align: center;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    color: #fff; /* Cor do texto branca para melhor contraste com o fundo */
+    margin: 0; /* Removido o espaçamento padrão superior e inferior do h1 */
+  }
+    .container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .tank-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-right: 20px; /* Ajuste a margem conforme necessário */
+    }
+
+    .tank {
+      width: 230px;
+      height: 460px;
+      background-color: #ccc;
+      position: relative;
+      border: 2px solid #333;
+      border-radius: 5px;
+      margin-top: 20px;
+    }
+
+    .water {
+      width: 100%;
+      background-color: #3498db;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      transition: height 0.5s;
+    }
+
+    .graph {
+      width: 80%; /* 80% da largura do contêiner pai */
+      max-width: 800px; /* ou qualquer valor máximo desejado */
+      margin-top: 20px;
+    }
+
+    .level-value {
+      display: none;
+      margin-top: 10px;
+    }
+
+    .vazao-value {
+      display: none;
+      margin-top: 10px;
+    }
+
+    .nivel{
+      margin-top: 10px;
+      font-size: 20px;
+      font-family: bebas neue;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <h1>Controle de nível do Tanque - Fuzzy </h1>
+  </div>
+
+  <div class="container">
+    <div class="tank-container">
+      <div class="tank">
+        <div class="water" id="water"></div>
+      </div>
+      
+      <div class="nivel">     
+        <strong>Nível do tanque:</strong>
+         <span id="current-level">0.00</span> cm
+      </div>
+
+      <div class="nivel">     
+        <strong>Vazão:</strong>
+         <span id="vazao-level">0.00</span> litros/s
+      </div>
+
+      <div class="level-value">
+        {% for time in total %}
+          <span class="level-value">{{ time }}</span>
+        {% endfor %}
+      </div>
+
+      <div class="vazao-value">
+        {% for flow in vazao %}
+          <span class="vazao-value">{{ flow }}</span>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="graph">
+      <img src="data:image/png;base64,{{ image_data }}" alt="Gráfico Fuzzy"/>
+    </div>
+  </div>
+
+  <script>
+    function formatNumber(value) {
+      return Number(value).toFixed(2);
+    }
+
+    function updateWaterLevel(index) {
+      const tankLevels = document.querySelectorAll('.level-value');
+      const vazaoLevels = document.querySelectorAll('.vazao-value');
+      const waterElement = document.getElementById('water');
+      const currentLevelElement = document.getElementById('current-level');
+      const vazaoElement = document.getElementById('vazao-level');
+      const formattedValue = Number(tankLevels[index].innerText).toFixed(2);
+      
+      currentLevelElement.innerText = formattedValue;
+      vazaoElement.innerText = formatNumber(vazaoLevels[index].innerText);
+
+      tankLevels[index].classList.add('highlight'); // Optional: Add a highlight class for the current value
+
+      setTimeout(() => {
+        waterElement.style.height = `${formattedValue}%`;
+        tankLevels[index].classList.remove('highlight'); // Optional: Remove the highlight class
+      }, index * 50); // Adjust the delay as needed (index * 1000 means 1-second delay between each update)
+    }
+
+    // Example: Call updateWaterLevel for each tank level
+    document.addEventListener('DOMContentLoaded', function () {
+      const tankLevels = document.querySelectorAll('.level-value');
+      const vazaoLevels = document.querySelectorAll('.vazao-value');
+
+      tankLevels.forEach((level, index) => {
+        setTimeout(() => {
+          updateWaterLevel(index);
+        }, index * 50);
+      });
+    });
+
+    window.addEventListener('load', function () {
+    var graphImage = document.querySelector('.graph img');
+    // Ajuste os valores de largura e altura conforme necessário
+    graphImage.style.width = '800px';
+    graphImage.style.height = 'auto'; // Mantém a proporção original da imagem
+  });
+  </script>
+</body>
+</html>

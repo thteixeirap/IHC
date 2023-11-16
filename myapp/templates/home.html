@@ -1,0 +1,193 @@
+<!-- myapp/templates/home.html -->
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gerador de Gráficos - Trabalho de IHC</title>
+
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+    }
+
+    h2 {
+      color: #333;
+    }
+
+    nav {
+      background-color: #3498db;
+      color: #fff;
+      padding: 10px;
+      text-align: center;
+    }
+
+    form {
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    input[type="range"] {
+      width: 80%;
+      margin-top: 10px;
+      height: 120px; /* Ajuste a altura desejada */
+      outline: none;
+      border: 2px solid #4caf50;
+      border-radius: 5px;
+      margin-bottom: 20px; /* Adicionado para espaçamento inferior */
+      cursor: pointer;
+    }
+
+    #tank-level-value {
+      /* display: inline-block; */
+      margin-top: 5px;
+      font-weight: bold;
+      font-size: 2em;
+    }
+
+    .center-container {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .tank {
+    width: 230px; /* Ajuste a largura desejada */
+    height: 460px; /* Ajuste a altura desejada */
+    background-color: #ccc;
+    position: relative;
+    border: 2px solid #333;
+    border-radius: 5px;
+  }
+
+    .water {
+      width: 100%;
+      background-color: #3498db;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      transition: height 0.5s;
+    }
+
+    .vertical-slider {
+      text-align: center;
+      width: 80%;
+    }
+
+    button {
+      padding: 20px 40px;
+      background-color: #4caf50;
+      color: #fff;
+      border: none;
+      font-size: 1.5em;
+      cursor: pointer;
+      margin-top: 50px; /* Reduzido o espaço superior */
+      border-radius: 5px;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    img {
+      max-width: 100%;
+      margin-top: 10px;
+      display: block;
+    }
+
+    .faq-container {
+      margin-top: 50px;
+      background-color: #f8f8f8;
+      padding: 20px;
+      border-radius: 10px;
+    }
+
+    details {
+      margin-bottom: 15px;
+    }
+
+    summary {
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    p {
+      margin-top: 10px;
+    }
+
+    .legend {
+      text-align: center;
+      font-size: 1.2em;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <h1>Trabalho de IHC - Controlador de Tanque (Fuzzy)</h1>
+  </nav>
+
+  {% if fuzzy_graphs %}
+    <h2>Gráficos Fuzzy</h2>
+
+    {% for graph_data in fuzzy_graphs %}
+      <img src="data:image/png;base64,{{ graph_data }}" alt="Gráfico Fuzzy" />
+    {% endfor %}
+  {% else %}
+    <form method="post" action="{% url 'fuzzy_graphs' %}">
+      {% csrf_token %}
+      <div class="center-container">
+        <div class="tank">
+          <div class="water" id="water"></div>
+        </div>
+        <div class="vertical-slider">
+          <span id="tank-level-value">0 cm | 0%</span>
+          <label for="tank_level">Nível do Tanque:</label>
+          <input type="range" name="tank_level" id="tank_level" min="0" max="80" value="0" step="0.1" onchange="updateWaterLevel(this.value)" />
+        </div>
+      </div>
+      <div class="legend">
+        <!-- Adicione qualquer informação adicional aqui, se necessário -->
+      </div>
+      <button type="submit">Mostrar Gráficos Fuzzy</button>
+    </form>
+
+    <div class="faq-container">
+      <h2>Dúvidas Frequentes</h2>
+
+      <details>
+        <summary>O que é vazão?</summary>
+        <p>A vazão é a quantidade de líquido ou gás que passa por uma seção específica de um canal ou tubo em uma unidade de tempo. É comumente expressa em litros por segundo (L/s) para líquidos ou metros cúbicos por segundo (m³/s) para gases.</p>
+      </details>
+
+      <details>
+        <summary>O que é fuzzy?</summary>
+        <p>A lógica fuzzy é uma abordagem da lógica que lida com a incerteza e a imprecisão. Em vez de lidar com valores verdadeiros ou falsos, a lógica fuzzy trabalha com graus de pertinência, permitindo uma representação mais flexível e natural do conhecimento humano.</p>
+      </details>
+    </div>
+  {% endif %}
+
+  <script>
+
+    function formatNumber(value) {
+      return Number(value).toFixed(2);
+    }
+
+    function updateWaterLevel(value) {
+    const formattedValue = Number(value).toFixed(2);
+
+
+    document.getElementById('tank-level-value').innerText = formattedValue + ' cm' + ' | ' + formatNumber((formattedValue * 100) / 80) + '%';
+
+    const waterHeight = formattedValue;
+    document.getElementById('water').style.height = `${waterHeight}%`;
+}
+  </script>
+</body>
+</html>
