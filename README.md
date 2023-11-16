@@ -1,4 +1,4 @@
-# IHC# Controle de Tanque Fuzzy - Django App
+# IHC Controle de Tanque Fuzzy - Django App
 
 Este é um aplicativo Django que utiliza lógica fuzzy para controlar o nível de um tanque e exibir gráficos interativos.
 
