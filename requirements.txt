@@ -1,0 +1,4 @@
+Django==3.2.8
+numpy==1.21.2
+matplotlib==3.4.3
+scikit-fuzzy==0.4.2
